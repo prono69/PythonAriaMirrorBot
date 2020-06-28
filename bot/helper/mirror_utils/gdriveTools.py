@@ -248,19 +248,16 @@ class GoogleDriveHelper:
                                                    pageToken=page_token,
                                                    orderBy='modifiedTime desc').execute()
             for file in response.get('files', []):
+                if len(results) >= 20:
+                    break
                 if file.get(
                         'mimeType') == "application/vnd.google-apps.folder":  # Detect Whether Current Entity is a Folder or File.
-                    if len(results) >= 20:
-                        break
                     msg += f"⁍ <a href='https://drive.google.com/drive/folders/{file.get('id')}'>{file.get('name')}" \
                            f"</a> (folder)" + "\n"
-                    results.append(file)
                 else:
-                    if len(results) >= 20:
-                        break
                     msg += f"⁍ <a href='https://drive.google.com/uc?id={file.get('id')}" \
                            f"&export=download'>{file.get('name')}</a> ({get_readable_file_size(int(file.get('size')))})" + "\n"
-                    results.append(file)
+                results.append(file)
             page_token = response.get('nextPageToken', None)
             if page_token is None:
                 break

@@ -50,10 +50,7 @@ def get_progress_bar_string(status):
     else:
         completed = status.download().completed_length / 8
     total = status.download().total_length / 8
-    if total == 0:
-        p = 0
-    else:
-        p = round(completed * 100 / total)
+    p = 0 if total == 0 else round(completed * 100 / total)
     p = min(max(p, 0), 100)
     cFull = p // 8
     cPart = p % 8 - 1
@@ -74,8 +71,8 @@ def get_download_index(_list, gid):
 
 
 def get_download_str():
-    result = ""
     with download_dict_lock:
+        result = ""
         for status in list(download_dict.values()):
             result += (status.progress() + status.speed() + status.status())
         return result
@@ -119,13 +116,9 @@ def get_readable_time(seconds: int) -> str:
 
 def is_url(url: str):
     url = re.findall(URL_REGEX,url)
-    if url:
-        return True
-    return False    
+    return bool(url)    
 
 
 def is_magnet(url: str):
     magnet = re.findall(MAGNET_REGEX,url)
-    if magnet:
-        return True
-    return False
+    return bool(magnet)

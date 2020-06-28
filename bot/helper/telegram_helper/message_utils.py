@@ -17,8 +17,7 @@ def editMessage(text: str, context, message: Message):
                                   chat_id=message.chat.id,
                                   parse_mode='HTMl')
     except TimedOut as e:
-        LOGGER.error(str(e))
-        pass             
+        LOGGER.error(str(e))             
         
 
 

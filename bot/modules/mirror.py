@@ -70,10 +70,9 @@ class MirrorListener(listeners.MirrorListeners):
         with download_dict_lock:
             LOGGER.info(f"Deleting {progress_status_list[index].name()} from download_dict.")
             try:
-               del download_dict[self.uid]
+                del download_dict[self.uid]
             except KeyError as e:
                 LOGGER.info(str(e))
-                pass   
         try:
             fs_utils.clean_download(progress_status_list[index].path())
         except FileNotFoundError:
@@ -81,7 +80,7 @@ class MirrorListener(listeners.MirrorListeners):
         if self.message.from_user.username:
             uname = f"@{self.message.from_user.username}"
         else:
-            uname = f'<a href="tg://user?id={self.message.from_user.id}">{self.message.from_user.first_name}</a>' 
+            uname = f'<a href="tg://user?id={self.message.from_user.id}">{self.message.from_user.first_name}</a>'
         msg = f"{uname} your download has been stopped due to: {error}"
         sendMessage(msg, self.context, self.update)
 
@@ -138,15 +137,14 @@ def _mirror(update, context, isTar=False):
     LOGGER.info(link)
     link = link.strip()
 
-    if len(link) == 0:
-        if update.message.reply_to_message is not None:
-            document = update.message.reply_to_message.document
-            if document is not None and document.mime_type == "application/x-bittorrent":
-                link = document.get_file().file_path
-            else:
-                sendMessage('Only torrent files can be mirrored from telegram', context, update)
-                return
-    if not bot_utils.is_url(link) and not bot_utils.is_magnet(link):
+    if len(link) == 0 and update.message.reply_to_message is not None:
+        document = update.message.reply_to_message.document
+        if document is not None and document.mime_type == "application/x-bittorrent":
+            link = document.get_file().file_path
+        else:
+            sendMessage('Only torrent files can be mirrored from telegram', context, update)
+            return
+    if not (bot_utils.is_url(link) or bot_utils.is_magnet(link)):
         sendMessage('No download source provided', context, update)
         return
     reply_msg = sendMessage('Starting Download', context, update)
